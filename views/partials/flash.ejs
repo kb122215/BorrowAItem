@@ -1,0 +1,10 @@
+<% if ((locals.success && success.length) || (locals.error && error.length)) { %>
+  <div class="container flash-wrap">
+    <% success.forEach((msg) => { %>
+      <div class="flash flash-success"><i class="fa-solid fa-circle-check"></i> <%= msg %></div>
+    <% }) %>
+    <% error.forEach((msg) => { %>
+      <div class="flash flash-error"><i class="fa-solid fa-circle-exclamation"></i> <%= msg %></div>
+    <% }) %>
+  </div>
+<% } %>

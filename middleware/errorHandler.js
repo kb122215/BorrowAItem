@@ -1,14 +1,14 @@
 const errorHandler = (error, req, res, next) => {
-  console.error(error.message);
+  console.error(error);
 
-  if (error.name === "CastError")
-    return res.status(400).json({ error: "Malformed id" });
-  if (error.name === "ValidationError")
-    return res.status(400).json({ error: error.message });
-  if (error.code === 11000)
-    return res.status(400).json({ error: "Email already in use" });
+  // A bad id in the URL (e.g. /items/abc/edit) is really a "not found"
+  const status = error.name === "CastError" ? 404 : 500;
+  const message =
+    status === 404
+      ? "We couldn't find that page."
+      : "Something went wrong on our end. Please try again.";
 
-  res.status(500).json({ error: "Something went wrong" });
+  res.status(status).render("error", { title: "Error", status, message });
 };
 
 module.exports = errorHandler;

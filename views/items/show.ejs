@@ -1,0 +1,76 @@
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<main class="container section">
+  <a href="/items" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Browse</a>
+
+  <div class="detail">
+    <!-- Item info -->
+    <article class="card detail-main">
+      <div class="item-card-top">
+        <div class="card-icon card-icon-lg"><i class="fa-solid <%= CATEGORY_ICONS[item.category] %>"></i></div>
+        <span class="badge <%= item.available ? 'badge-available' : 'badge-borrowed' %>">
+          <%= item.available ? 'Available' : 'Borrowed' %>
+        </span>
+      </div>
+
+      <h1><%= item.name %></h1>
+
+      <ul class="item-meta">
+        <li><i class="fa-solid fa-tag"></i> <span class="capitalize"><%= item.category %></span></li>
+        <li><i class="fa-solid fa-star-half-stroke"></i> <span class="capitalize"><%= item.condition %></span> condition</li>
+        <li><i class="fa-solid fa-location-dot"></i> Zip <%= item.zip %></li>
+        <li><i class="fa-solid fa-calendar-days"></i> Listed <%= formatDate(item.createdAt) %></li>
+      </ul>
+    </article>
+
+    <!-- Right side: changes depending on who's looking -->
+    <aside class="card detail-side">
+      <% if (isOwner) { %>
+        <h2>This is your item</h2>
+        <p class="muted">Neighbors can find it on Browse and send you borrow requests.</p>
+        <a href="/items/<%= item.id %>/edit" class="btn btn-outline btn-block">
+          <i class="fa-solid fa-pen"></i> Edit listing
+        </a>
+
+      <% } else if (pendingRequest) { %>
+        <span class="badge badge-pending">Pending</span>
+        <h2>Request sent</h2>
+        <p class="muted">
+          You asked to borrow this from
+          <strong><%= formatDate(pendingRequest.startDate) %></strong> to
+          <strong><%= formatDate(pendingRequest.endDate) %></strong>.
+          The owner will approve or decline it.
+        </p>
+
+      <% } else if (!item.available) { %>
+        <h2>Currently borrowed</h2>
+        <p class="muted">Someone has this right now. Check back soon.</p>
+
+      <% } else { %>
+        <h2>Borrow this item</h2>
+        <p class="muted">Pick your dates and send a request to the owner.</p>
+
+        <% if (formError) { %>
+          <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i> <%= formError %></p>
+        <% } %>
+
+        <form action="/items/<%= item.id %>/borrow" method="POST" class="form">
+          <label>Start date
+            <input type="date" name="startDate" min="<%= today %>"
+                   value="<%= values.startDate || '' %>" required>
+          </label>
+          <label>End date
+            <input type="date" name="endDate" min="<%= today %>"
+                   value="<%= values.endDate || '' %>" required>
+          </label>
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fa-solid fa-paper-plane"></i> Send request
+          </button>
+        </form>
+      <% } %>
+    </aside>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

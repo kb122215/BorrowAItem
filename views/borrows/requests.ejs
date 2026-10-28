@@ -1,0 +1,115 @@
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<%
+  const sections = [
+    { key: 'pending', title: 'Waiting for you', icon: 'fa-inbox', empty: 'No new requests.' },
+    { key: 'approved', title: 'Lent out', icon: 'fa-handshake', empty: 'Nothing is lent out right now.' },
+    { key: 'history', title: 'History', icon: 'fa-clock-rotate-left', empty: 'Nothing here yet.' },
+  ]
+%>
+
+<main class="container section">
+  <div class="page-header">
+    <div>
+      <h1>Requests</h1>
+      <p class="muted">Neighbors asking to borrow your items.</p>
+    </div>
+    <a href="/items/mine" class="btn btn-outline"><i class="fa-solid fa-box-open"></i> My Items</a>
+  </div>
+
+  <% sections.forEach((section) => { %>
+    <section class="borrow-section">
+      <h2><i class="fa-solid <%= section.icon %>"></i> <%= section.title %></h2>
+
+      <% if (groups[section.key].length === 0) { %>
+        <p class="empty-line"><%= section.empty %></p>
+      <% } else { %>
+        <div class="borrow-list">
+          <% groups[section.key].forEach((b) => { %>
+            <article class="card borrow-row <%= b.isOverdue ? 'is-overdue' : '' %>">
+              <div class="card-icon">
+                <i class="fa-solid <%= b.itemId ? CATEGORY_ICONS[b.itemId.category] : 'fa-box' %>"></i>
+              </div>
+
+              <div class="borrow-info">
+                <h3>
+                  <%= b.itemId ? b.itemId.name : 'Removed item' %>
+                  <% if (b.isOverdue) { %>
+                    <span class="badge badge-overdue"><i class="fa-solid fa-triangle-exclamation"></i> Overdue</span>
+                  <% } %>
+                </h3>
+                <p class="muted">
+                  <i class="fa-solid fa-calendar-days"></i>
+                  <%= formatDate(b.startDate) %> – <%= formatDate(b.endDate) %>
+                </p>
+
+                <% if (b.borrowerId && (b.status === 'pending' || b.status === 'approved')) { %>
+                  <p>
+                    <i class="fa-solid fa-user"></i>
+                    <a href="mailto:<%= b.borrowerId.email %>"><%= b.borrowerId.email %></a>
+                  </p>
+
+                  <% const record = ratings[b.borrowerId.id] %>
+                  <p class="trust">
+                    <% if (record) { %>
+                      <span class="trust-up"><i class="fa-solid fa-thumbs-up"></i> <%= record.up %></span>
+                      <span class="trust-down"><i class="fa-solid fa-thumbs-down"></i> <%= record.down %></span>
+                      from past lenders
+                    <% } else { %>
+                      <i class="fa-solid fa-seedling"></i> New borrower, no ratings yet
+                    <% } %>
+                  </p>
+                <% } %>
+              </div>
+
+              <% if (b.status === 'pending') { %>
+                <div class="borrow-actions">
+                  <form action="/borrows/<%= b.id %>/approve?_method=PUT" method="POST">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                      <i class="fa-solid fa-check"></i> Approve
+                    </button>
+                  </form>
+                  <form action="/borrows/<%= b.id %>/decline?_method=PUT" method="POST">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                      <i class="fa-solid fa-xmark"></i> Decline
+                    </button>
+                  </form>
+                </div>
+
+              <% } else if (b.status === 'approved') { %>
+                <form action="/borrows/<%= b.id %>/return?_method=PUT" method="POST"
+                      onsubmit="return confirm('Mark this item as returned?')">
+                  <button type="submit" class="btn btn-outline btn-sm">
+                    <i class="fa-solid fa-rotate-left"></i> Mark returned
+                  </button>
+                </form>
+
+              <% } else if (b.status === 'returned' && !b.ownerRating) { %>
+                <form action="/borrows/<%= b.id %>/rate?_method=PUT" method="POST" class="rating-form">
+                  <span class="muted">Rate borrower:</span>
+                  <button type="submit" name="rating" value="up" class="btn-rate" aria-label="Thumbs up">
+                    <i class="fa-solid fa-thumbs-up"></i>
+                  </button>
+                  <button type="submit" name="rating" value="down" class="btn-rate btn-rate-down" aria-label="Thumbs down">
+                    <i class="fa-solid fa-thumbs-down"></i>
+                  </button>
+                </form>
+
+              <% } else if (b.ownerRating) { %>
+                <span class="badge badge-returned">
+                  Returned · <i class="fa-solid fa-thumbs-<%= b.ownerRating %>"></i>
+                </span>
+
+              <% } else { %>
+                <span class="badge badge-<%= b.status %> capitalize"><%= b.status %></span>
+              <% } %>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  <% }) %>
+</main>
+
+<%- include('../partials/footer') %>

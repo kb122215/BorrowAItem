@@ -1,0 +1,32 @@
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<main class="auth">
+  <div class="card form-card">
+    <div class="card-icon"><i class="fa-solid fa-plus"></i></div>
+    <h1>List an item</h1>
+    <p class="muted">What are you happy to lend to a neighbor?</p>
+
+    <%- include('_form', { action: '/items', submitLabel: 'List item' }) %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+views/items/edit.ejs
+
+ejs
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<main class="auth">
+  <div class="card form-card">
+    <div class="card-icon"><i class="fa-solid fa-pen"></i></div>
+    <h1>Edit item</h1>
+    <p class="muted">Update the details of your listing.</p>
+
+    <%- include('_form', { action: `/items/${itemId}?_method=PUT`, submitLabel: 'Save changes' }) %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

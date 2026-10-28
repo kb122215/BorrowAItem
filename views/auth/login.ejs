@@ -1,0 +1,32 @@
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<main class="auth">
+  <div class="card auth-card">
+    <div class="card-icon"><i class="fa-solid fa-right-to-bracket"></i></div>
+    <h1>Welcome back</h1>
+    <p class="muted">Log in to see what your neighbors are sharing.</p>
+
+    <% if (formError) { %>
+      <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i> <%= formError %></p>
+    <% } %>
+
+    <form action="/login" method="POST" class="form">
+      <label>Email
+        <input type="email" name="email" value="<%= values.email || '' %>" required autocomplete="email">
+      </label>
+
+      <label>Password
+        <input type="password" name="password" required autocomplete="current-password">
+      </label>
+
+      <button type="submit" class="btn btn-primary btn-block">
+        <i class="fa-solid fa-right-to-bracket"></i> Log in
+      </button>
+    </form>
+
+    <p class="form-footer">New here? <a href="/signup">Create an account</a></p>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

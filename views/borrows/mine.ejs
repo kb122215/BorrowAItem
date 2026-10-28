@@ -1,0 +1,70 @@
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<%
+  const sections = [
+    { key: 'approved', title: 'Borrowing now', icon: 'fa-handshake', empty: "You're not borrowing anything right now." },
+    { key: 'pending', title: 'Waiting for approval', icon: 'fa-hourglass-half', empty: 'No pending requests.' },
+    { key: 'history', title: 'History', icon: 'fa-clock-rotate-left', empty: 'Nothing here yet.' },
+  ]
+%>
+
+<main class="container section">
+  <div class="page-header">
+    <div>
+      <h1>My Borrows</h1>
+      <p class="muted">Things you've asked to borrow from neighbors.</p>
+    </div>
+    <a href="/items" class="btn btn-outline"><i class="fa-solid fa-magnifying-glass"></i> Browse items</a>
+  </div>
+
+  <% sections.forEach((section) => { %>
+    <section class="borrow-section">
+      <h2><i class="fa-solid <%= section.icon %>"></i> <%= section.title %></h2>
+
+      <% if (groups[section.key].length === 0) { %>
+        <p class="empty-line"><%= section.empty %></p>
+      <% } else { %>
+        <div class="borrow-list">
+          <% groups[section.key].forEach((b) => { %>
+            <article class="card borrow-row <%= b.isOverdue ? 'is-overdue' : '' %>">
+              <div class="card-icon">
+                <i class="fa-solid <%= b.itemId ? CATEGORY_ICONS[b.itemId.category] : 'fa-box' %>"></i>
+              </div>
+
+              <div class="borrow-info">
+                <h3>
+                  <% if (b.itemId) { %>
+                    <a href="/items/<%= b.itemId.id %>"><%= b.itemId.name %></a>
+                  <% } else { %>
+                    Removed item
+                  <% } %>
+                  <% if (b.isOverdue) { %>
+                    <span class="badge badge-overdue"><i class="fa-solid fa-triangle-exclamation"></i> Overdue</span>
+                  <% } %>
+                </h3>
+                <p class="muted">
+                  <i class="fa-solid fa-calendar-days"></i>
+                  <%= formatDate(b.startDate) %> – <%= formatDate(b.endDate) %>
+                </p>
+                <% if (b.isOverdue) { %>
+                  <p class="overdue-note">This was due back <%= formatDate(b.endDate) %>. Please return it soon.</p>
+                <% } %>
+                <% if (b.status === 'approved' && b.ownerId) { %>
+                  <p>
+                    <i class="fa-solid fa-envelope"></i> Arrange pickup:
+                    <a href="mailto:<%= b.ownerId.email %>"><%= b.ownerId.email %></a>
+                  </p>
+                <% } %>
+              </div>
+
+              <span class="badge badge-<%= b.status %> capitalize"><%= b.status %></span>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  <% }) %>
+</main>
+
+<%- include('../partials/footer') %>

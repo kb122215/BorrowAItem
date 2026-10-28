@@ -1,0 +1,41 @@
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<main class="auth">
+  <div class="card auth-card">
+    <div class="card-icon"><i class="fa-solid fa-user-plus"></i></div>
+    <h1>Create your account</h1>
+    <p class="muted">Start borrowing and lending in your neighborhood.</p>
+
+    <% if (formError) { %>
+      <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i> <%= formError %></p>
+    <% } %>
+
+    <form action="/signup" method="POST" class="form">
+      <label>Email
+        <input type="email" name="email" value="<%= values.email || '' %>" required autocomplete="email">
+      </label>
+
+      <label>Zip code
+        <input type="text" name="zip" value="<%= values.zip || '' %>" required
+               inputmode="numeric" pattern="\d{5}" maxlength="5" placeholder="19104">
+      </label>
+
+      <label>Password
+        <input type="password" name="password" required minlength="8" autocomplete="new-password">
+      </label>
+
+      <label>Confirm password
+        <input type="password" name="confirmPassword" required minlength="8" autocomplete="new-password">
+      </label>
+
+      <button type="submit" class="btn btn-primary btn-block">
+        <i class="fa-solid fa-user-plus"></i> Sign up
+      </button>
+    </form>
+
+    <p class="form-footer">Already have an account? <a href="/login">Log in</a></p>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

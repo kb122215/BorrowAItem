@@ -1,6 +1,13 @@
 const ensureAuth = (req, res, next) => {
   if (req.isAuthenticated()) return next();
-  res.status(401).json({ error: "You must be logged in" });
+  req.flash("error", "Please log in first");
+  res.redirect("/login");
 };
 
-module.exports = { ensureAuth };
+// Logged-in users don't need to see login/signup
+const ensureGuest = (req, res, next) => {
+  if (!req.isAuthenticated()) return next();
+  res.redirect("/items");
+};
+
+module.exports = { ensureAuth, ensureGuest };

@@ -1,0 +1,44 @@
+<% if (formError) { %>
+  <p class="form-error"><i class="fa-solid fa-circle-exclamation"></i> <%= formError %></p>
+<% } %>
+
+<form action="<%= action %>" method="POST" class="form">
+  <label>Item name
+    <input type="text" name="name" value="<%= values.name || '' %>"
+           required maxlength="60" placeholder="e.g. Cordless drill">
+  </label>
+
+  <label>Category
+    <select name="category" required>
+      <option value="">Choose a category</option>
+      <% CATEGORIES.forEach((cat) => { %>
+        <option value="<%= cat %>" <%= values.category === cat ? 'selected' : '' %>>
+          <%= cat[0].toUpperCase() + cat.slice(1) %>
+        </option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Condition
+    <select name="condition" required>
+      <option value="">Choose a condition</option>
+      <% CONDITIONS.forEach((cond) => { %>
+        <option value="<%= cond %>" <%= values.condition === cond ? 'selected' : '' %>>
+          <%= cond[0].toUpperCase() + cond.slice(1) %>
+        </option>
+      <% }) %>
+    </select>
+  </label>
+
+  <label>Zip code
+    <input type="text" name="zip" value="<%= values.zip || '' %>"
+           required inputmode="numeric" pattern="\d{5}" maxlength="5">
+  </label>
+
+  <div class="form-actions">
+    <a href="/items/mine" class="btn btn-outline">Cancel</a>
+    <button type="submit" class="btn btn-primary">
+      <i class="fa-solid fa-check"></i> <%= submitLabel %>
+    </button>
+  </div>
+</form>

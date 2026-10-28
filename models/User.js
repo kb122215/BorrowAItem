@@ -5,16 +5,21 @@ const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
       unique: true,
       lowercase: true,
       trim: true,
+      match: [/^\S+@\S+\.\S+$/, "Enter a valid email address"],
     },
-    password: { type: String, required: true, minlength: 8 },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      minlength: [8, "Password must be at least 8 characters"],
+    },
     zip: {
       type: String,
-      required: true,
-      match: [/^\d{5}$/, "Zip must be 5 digits"],
+      required: [true, "Zip code is required"],
+      match: [/^\d{5}$/, "Zip code must be 5 digits"],
     },
   },
   { timestamps: true },

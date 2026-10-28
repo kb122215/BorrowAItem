@@ -1,0 +1,55 @@
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<main class="container section">
+  <div class="page-header">
+    <div>
+      <h1>My Items</h1>
+      <p class="muted">Things you're willing to lend.</p>
+    </div>
+    <a href="/items/new" class="btn btn-primary"><i class="fa-solid fa-plus"></i> List an item</a>
+  </div>
+
+  <% if (items.length === 0) { %>
+    <div class="card empty-state">
+      <div class="card-icon"><i class="fa-solid fa-box-open"></i></div>
+      <h2>Nothing listed yet</h2>
+      <p class="muted">That ladder in your garage could save a neighbor a trip to the store.</p>
+      <a href="/items/new" class="btn btn-primary">List your first item</a>
+    </div>
+  <% } else { %>
+    <div class="grid">
+      <% items.forEach((item) => { %>
+        <article class="card item-card">
+          <div class="item-card-top">
+            <div class="card-icon"><i class="fa-solid <%= CATEGORY_ICONS[item.category] %>"></i></div>
+            <span class="badge <%= item.available ? 'badge-available' : 'badge-borrowed' %>">
+              <%= item.available ? 'Available' : 'Borrowed' %>
+            </span>
+          </div>
+
+          <h3><%= item.name %></h3>
+          <ul class="item-meta">
+            <li><i class="fa-solid fa-tag"></i> <span class="capitalize"><%= item.category %></span></li>
+            <li><i class="fa-solid fa-star-half-stroke"></i> <span class="capitalize"><%= item.condition %></span> condition</li>
+            <li><i class="fa-solid fa-location-dot"></i> <%= item.zip %></li>
+          </ul>
+
+          <div class="item-actions">
+            <a href="/items/<%= item.id %>/edit" class="btn btn-outline btn-sm">
+              <i class="fa-solid fa-pen"></i> Edit
+            </a>
+            <form action="/items/<%= item.id %>?_method=DELETE" method="POST"
+                  onsubmit="return confirm('Remove this item?')">
+              <button type="submit" class="btn btn-danger btn-sm">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </form>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+
+<%- include('../partials/footer') %>

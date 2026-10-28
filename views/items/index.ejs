@@ -1,0 +1,88 @@
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<main class="container section">
+  <div class="page-header">
+    <div>
+      <h1>Browse</h1>
+      <p class="muted">
+        <%= items.length %> item<%= items.length === 1 ? '' : 's' %>
+        <%= filters.q ? `matching "${filters.q}"` : '' %>
+        <%= filters.zip ? `in ${filters.zip}` : 'in all areas' %>
+      </p>
+    </div>
+    <a href="/items/new" class="btn btn-outline"><i class="fa-solid fa-plus"></i> List an item</a>
+  </div>
+
+  <form action="/items" method="GET" class="card filter-bar">
+    <label class="search-field">Search
+      <span class="input-icon">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" name="q" value="<%= filters.q %>" placeholder="Drill, ladder, tent..." maxlength="50">
+      </span>
+    </label>
+
+    <label>Category
+      <select name="category">
+        <option value="">All categories</option>
+        <% CATEGORIES.forEach((cat) => { %>
+          <option value="<%= cat %>" <%= filters.category === cat ? 'selected' : '' %>>
+            <%= cat[0].toUpperCase() + cat.slice(1) %>
+          </option>
+        <% }) %>
+      </select>
+    </label>
+
+    <label>Zip code
+      <input type="text" name="zip" value="<%= filters.zip %>" placeholder="Any area"
+             inputmode="numeric" pattern="\d{5}" maxlength="5">
+    </label>
+
+    <label class="checkbox">
+      <input type="checkbox" name="available" <%= filters.availableOnly ? 'checked' : '' %>>
+      Available only
+    </label>
+
+    <div class="filter-actions">
+      <button type="submit" class="btn btn-primary"><i class="fa-solid fa-filter"></i> Filter</button>
+      <a href="/items?zip=" class="btn-link">Clear</a>
+    </div>
+  </form>
+
+  <% if (items.length === 0) { %>
+    <div class="card empty-state">
+      <div class="card-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+      <h2>No items found</h2>
+      <p class="muted">Try a different search, category, or zip code, or be the first to list something here.</p>
+      <a href="/items?zip=" class="btn btn-primary">See all areas</a>
+    </div>
+  <% } else { %>
+    <div class="grid">
+      <% items.forEach((item) => { %>
+        <article class="card item-card">
+          <div class="item-card-top">
+            <div class="card-icon"><i class="fa-solid <%= CATEGORY_ICONS[item.category] %>"></i></div>
+            <span class="badge <%= item.available ? 'badge-available' : 'badge-borrowed' %>">
+              <%= item.available ? 'Available' : 'Borrowed' %>
+            </span>
+          </div>
+
+          <h3><%= item.name %></h3>
+          <ul class="item-meta">
+            <li><i class="fa-solid fa-tag"></i> <span class="capitalize"><%= item.category %></span></li>
+            <li><i class="fa-solid fa-star-half-stroke"></i> <span class="capitalize"><%= item.condition %></span> condition</li>
+            <li><i class="fa-solid fa-location-dot"></i> <%= item.zip %></li>
+          </ul>
+
+          <div class="item-actions">
+            <a href="/items/<%= item.id %>" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-eye"></i> View
+            </a>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+
+<%- include('../partials/footer') %>
